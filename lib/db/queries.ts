@@ -15,6 +15,7 @@ import {
   type Message,
   message,
   vote,
+  transaction,
 } from './schema';
 import { BlockKind } from '@/components/block';
 
@@ -23,6 +24,7 @@ import { BlockKind } from '@/components/block';
 // https://authjs.dev/reference/adapter/drizzle
 
 // biome-ignore lint: Forbidden non-null assertion.
+console.log('--- POSTGRES_URL from server code is:', process.env.POSTGRES_URL);
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
@@ -328,3 +330,80 @@ export async function updateChatVisiblityById({
     throw error;
   }
 }
+
+export async function addTransactionToDb({
+  chatId,
+  userId,
+  amount,
+}: {
+  chatId: string;
+  userId: string;
+  amount: number;
+}) {
+  try {
+    return await db.insert(transaction).values({
+      id: crypto.randomUUID(), // Using crypto for UUID generation
+      chatId,
+      userId,
+      amount: amount.toString(), // Converting to string as per schema
+      createdAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Failed to add transaction to database');
+    throw error;
+  }
+}
+
+// Updated getTransactionsByChatId with better error handling and types
+export async function getTransactionsByChatId(chatId: string) {
+  try {
+    const transactions = await db
+      .select()
+      .from(transaction)
+      .where(eq(transaction.chatId, chatId))
+      .orderBy(desc(transaction.createdAt));
+
+    // Add runtime check for empty results
+    if (!transactions || transactions.length === 0) {
+      return []; // Return empty array instead of undefined
+    }
+
+    return transactions;
+  } catch (error) {
+    console.error('Failed to get transactions by chat id from database');
+    throw error;
+  }
+}
+
+// New helper function to calculate balances for a chat
+export async function calculateChatBalances(chatId: string) {
+  try {
+    const transactions = await getTransactionsByChatId(chatId);
+    const balances: Record<string, number> = {};
+    const totalAmount = transactions.reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+    const participantCount = new Set(transactions.map(tx => tx.userId)).size;
+    
+    if (participantCount === 0) {
+      return { balances: {}, perPersonShare: 0 };
+    }
+
+    const perPersonShare = totalAmount / participantCount;
+
+    // Calculate individual balances
+    for (const tx of transactions) {
+      if (!balances[tx.userId]) {
+        balances[tx.userId] = 0;
+      }
+      balances[tx.userId] += parseFloat(tx.amount) - perPersonShare;
+    }
+
+    return {
+      balances,
+      perPersonShare
+    };
+  } catch (error) {
+    console.error('Failed to calculate chat balances');
+    throw error;
+  }
+}
+
