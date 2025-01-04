@@ -113,3 +113,16 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const transaction = pgTable('transaction', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  chatId: uuid('chatId')
+    .notNull()
+    .references(() => chat.id),
+  userId: varchar('userId', { length: 255 }).notNull(), // Changed to varchar
+  amount: text('amount').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+
+export type Transaction = InferSelectModel<typeof transaction>;
