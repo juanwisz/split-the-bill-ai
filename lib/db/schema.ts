@@ -114,15 +114,17 @@ export const suggestion = pgTable(
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
 
+// In schema.ts
 export const transaction = pgTable('transaction', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   chatId: uuid('chatId')
     .notNull()
     .references(() => chat.id),
-  userId: varchar('userId', { length: 255 }).notNull(), // Changed to varchar
-  amount: text('amount').notNull(),
+  payerName: varchar('payerName', { length: 255 }).notNull(),
+  receiversNames: json('receiversNames').$type<string[]>().notNull(), // Define the type for TypeScript
+  amount: varchar('amount', { length: 255 }).notNull(),
+  description: text('description'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
 });
-
 
 export type Transaction = InferSelectModel<typeof transaction>;

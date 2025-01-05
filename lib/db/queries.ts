@@ -333,19 +333,25 @@ export async function updateChatVisiblityById({
 
 export async function addTransactionToDb({
   chatId,
-  userId,
+  payerName,
+  receiversNames,
   amount,
+  description,
 }: {
   chatId: string;
-  userId: string;
+  payerName: string;
+  receiversNames: string[];
   amount: number;
+  description?: string;
 }) {
   try {
     return await db.insert(transaction).values({
-      id: crypto.randomUUID(), // Using crypto for UUID generation
+      id: crypto.randomUUID(),
       chatId,
-      userId,
-      amount: amount.toString(), // Converting to string as per schema
+      payerName,
+      receiversNames, // will be automatically serialized to JSON
+      amount: amount.toString(),
+      description,
       createdAt: new Date(),
     });
   } catch (error) {
@@ -375,31 +381,29 @@ export async function getTransactionsByChatId(chatId: string) {
   }
 }
 
-// New helper function to calculate balances for a chat
 export async function calculateChatBalances(chatId: string) {
   try {
     const transactions = await getTransactionsByChatId(chatId);
     const balances: Record<string, number> = {};
-    const totalAmount = transactions.reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
-    const participantCount = new Set(transactions.map(tx => tx.userId)).size;
     
-    if (participantCount === 0) {
-      return { balances: {}, perPersonShare: 0 };
-    }
-
-    const perPersonShare = totalAmount / participantCount;
-
-    // Calculate individual balances
     for (const tx of transactions) {
-      if (!balances[tx.userId]) {
-        balances[tx.userId] = 0;
+      const amount = parseFloat(tx.amount);
+      const perPersonShare = amount / tx.receiversNames.length;
+
+      // Add the full payment to payer's balance
+      if (!balances[tx.payerName]) balances[tx.payerName] = 0;
+      balances[tx.payerName] += amount;
+
+      // Subtract shares for each receiver (including payer if they're in receivers)
+      for (const receiver of tx.receiversNames) {
+        if (!balances[receiver]) balances[receiver] = 0;
+        balances[receiver] -= perPersonShare;
       }
-      balances[tx.userId] += parseFloat(tx.amount) - perPersonShare;
     }
 
     return {
       balances,
-      perPersonShare
+      transactions
     };
   } catch (error) {
     console.error('Failed to calculate chat balances');

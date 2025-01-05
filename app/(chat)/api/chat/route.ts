@@ -25,6 +25,7 @@ import {
   saveSuggestions,
   addTransactionToDb,
   getTransactionsByChatId,
+  calculateChatBalances,
 } from '@/lib/db/queries';
 import type { Suggestion } from '@/lib/db/schema';
 import {
@@ -317,24 +318,29 @@ export async function POST(request: Request) {
             },
           },
           addTransaction: {
-            description: 'Add a new transaction to the shared expense list.',
+            description: 'Add a new shared expense transaction where one person pays and multiple people share the cost.',
             parameters: z.object({
-              userId: z.string().describe('User who paid or is credited'),
-              amount: z.number().describe('The amount of the transaction'),
+              payerName: z.string(),
+              receiversNames: z.array(z.string()),
+              amount: z.number(),
+              description: z.string().optional()
             }),
-            execute: async ({ userId, amount }) => {
+            execute: async (params) => {
+              const { payerName, receiversNames, amount, description } = params;
               try {
-                await addTransactionToDb({
+                const transaction = await addTransactionToDb({
                   chatId: id,
-                  userId,
+                  payerName,
+                  receiversNames,
                   amount,
+                  description
                 });
                 
                 return {
                   id,
                   type: 'transaction',
-                  content: `Transaction of ${amount} added for user ${userId}`,
-                  data: { userId, amount }
+                  content: `Added expense: ${payerName} paid ${amount} split between ${receiversNames.join(', ')}`,
+                  data: { payerName, receiversNames, amount, description }
                 };
               } catch (error) {
                 console.error('Transaction error:', error);
@@ -345,28 +351,26 @@ export async function POST(request: Request) {
                   error: true
                 };
               }
-            },
-          },          
+            }
+          },
+          
           calculateBalance: {
-            description: 'Calculate how much each user owes or is owed in the current chat.',
+            description: 'Calculate how much each person owes or is owed based on all transactions.',
             parameters: z.object({}),
             execute: async () => {
               try {
-                const transactions = await getTransactionsByChatId(id);
-                const userBalances: Record<string, number> = {};
+                const { balances, transactions } = await calculateChatBalances(id);
           
-                for (const tx of transactions) {
-                  if (!userBalances[tx.userId]) {
-                    userBalances[tx.userId] = 0;
-                  }
-                  userBalances[tx.userId] += parseFloat(tx.amount);
-                }
+                // Format the result for display
+                const formattedBalances = Object.entries(balances).map(([person, amount]) => {
+                  return `${person}: ${amount >= 0 ? 'gets back' : 'owes'} ${Math.abs(amount).toFixed(2)}`;
+                }).join(', ');
           
                 return {
                   id,
                   type: 'balance',
-                  content: 'Balances calculated',
-                  data: { balances: userBalances }
+                  content: `Current balances: ${formattedBalances}`,
+                  data: { balances, transactions }
                 };
               } catch (error) {
                 console.error('Balance calculation error:', error);
@@ -377,8 +381,8 @@ export async function POST(request: Request) {
                   error: true
                 };
               }
-            },
-          },
+            }
+          }
         },              
         onFinish: async ({ response }) => {
           if (session.user?.id) {
