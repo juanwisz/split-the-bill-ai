@@ -176,3 +176,17 @@
 .suggestion-highlight {
     @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
 }
+
+.financial-container * {
+    color: black !important; /* For light mode background, black is okay. */
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  /* For a mid-gray background in dark mode, pure white can be too harsh,
+     so try a slightly darker gray like #222 */
+  .dark .financial-container * {
+    color: #222 !important;
+  }
+  
+  
