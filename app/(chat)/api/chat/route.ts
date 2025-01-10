@@ -359,18 +359,21 @@ export async function POST(request: Request) {
             parameters: z.object({}),
             execute: async () => {
               try {
-                const { balances, transactions } = await calculateChatBalances(id);
+                const { balances, transactions, simplifiedTransactions } = await calculateChatBalances(id);
           
-                // Format the result for display
-                const formattedBalances = Object.entries(balances).map(([person, amount]) => {
-                  return `${person}: ${amount >= 0 ? 'gets back' : 'owes'} ${Math.abs(amount).toFixed(2)}`;
-                }).join(', ');
+                // Format only the settlement instructions
+                const paymentInstructions = simplifiedTransactions.map(({from, to, amount}) => {
+                  return `${from} should pay ${to} $${amount.toFixed(2)}`;
+                }).join('\n');
           
                 return {
                   id,
                   type: 'balance',
-                  content: `Current balances: ${formattedBalances}`,
-                  data: { balances, transactions }
+                  content: `Optimal settlement plan:\n${paymentInstructions}`,
+                  data: { 
+                    simplifiedTransactions,  // Only pass what we need
+                    balances: {} // Empty object since we won't display it
+                  }
                 };
               } catch (error) {
                 console.error('Balance calculation error:', error);
