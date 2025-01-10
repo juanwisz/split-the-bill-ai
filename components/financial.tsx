@@ -19,6 +19,7 @@ interface FinancialData {
   data: {
     balances?: Record<string, number>;
     transactions?: Transaction[];
+    simplifiedTransactions?: Array<{from: string, to: string, amount: number}>;  // Add this
     payerName?: string;
     receiversNames?: string[];
     amount?: number;

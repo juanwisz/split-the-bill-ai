@@ -381,6 +381,39 @@ export async function getTransactionsByChatId(chatId: string) {
   }
 }
 
+function minimizeTransactions(balances: Record<string, number>) {
+  // Convert balances to arrays of creditors and debtors
+  const creditors = Object.entries(balances)
+    .filter(([_, amount]) => amount > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const debtors = Object.entries(balances)
+    .filter(([_, amount]) => amount < 0)
+    .sort((a, b) => a[1] - b[1]);
+
+  const transactions: Array<{from: string, to: string, amount: number}> = [];
+  let i = 0, j = 0;
+
+  while (i < debtors.length && j < creditors.length) {
+    const [debtor, debtAmount] = debtors[i];
+    const [creditor, creditAmount] = creditors[j];
+    
+    const amount = Math.min(Math.abs(debtAmount), creditAmount);
+    transactions.push({
+      from: debtor,
+      to: creditor,
+      amount: Number(amount.toFixed(2))
+    });
+
+    debtors[i][1] += amount;
+    creditors[j][1] -= amount;
+
+    if (Math.abs(debtors[i][1]) < 0.01) i++;
+    if (Math.abs(creditors[j][1]) < 0.01) j++;
+  }
+
+  return transactions;
+}
+
 export async function calculateChatBalances(chatId: string) {
   try {
     const transactions = await getTransactionsByChatId(chatId);
@@ -390,24 +423,24 @@ export async function calculateChatBalances(chatId: string) {
       const amount = parseFloat(tx.amount);
       const perPersonShare = amount / tx.receiversNames.length;
 
-      // Add the full payment to payer's balance
       if (!balances[tx.payerName]) balances[tx.payerName] = 0;
       balances[tx.payerName] += amount;
 
-      // Subtract shares for each receiver (including payer if they're in receivers)
       for (const receiver of tx.receiversNames) {
         if (!balances[receiver]) balances[receiver] = 0;
         balances[receiver] -= perPersonShare;
       }
     }
 
+    const simplifiedTransactions = minimizeTransactions(balances);
+
     return {
       balances,
-      transactions
+      transactions,
+      simplifiedTransactions
     };
   } catch (error) {
     console.error('Failed to calculate chat balances');
     throw error;
   }
 }
-
