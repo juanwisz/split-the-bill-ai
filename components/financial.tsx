@@ -83,7 +83,7 @@ export function Financial({ data = SAMPLE }: { data?: FinancialData }) {
       </div>
     );
   }
-  if (data.type === 'balance' && data.data.balances) {
+  if (data.type === 'balance') {
     return (
       <div className="flex flex-col gap-4 rounded-2xl p-4 bg-blue-50 max-w-[500px]">
         <div className="flex flex-row justify-between items-center">
@@ -92,32 +92,28 @@ export function Financial({ data = SAMPLE }: { data?: FinancialData }) {
               🔄
             </div>
             <div className="text-2xl font-medium text-blue-800">
-              Current Balances
+              Settlement Plan
             </div>
           </div>
         </div>
   
-        <div className="flex flex-col gap-2">
-          {Object.entries(data.data.balances).map(([person, amount]) => (
-            <div
-              key={person}
-              className="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm"
-            >
-              <span className="font-medium text-gray-900">
-                {person}
-              </span>
-              <span
-                className={
-                  amount >= 0
-                    ? "font-medium text-green-600"
-                    : "font-medium text-red-600"
-                }
+        {data.data.simplifiedTransactions && data.data.simplifiedTransactions.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {data.data.simplifiedTransactions.map((tx, index) => (
+              <div 
+                key={index}
+                className="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm border-l-4 border-blue-500"
               >
-                {amount >= 0 ? 'Gets back' : 'Owes'} ${Math.abs(amount).toFixed(2)}
-              </span>
-            </div>
-          ))}
-        </div>
+                <span className="text-gray-900">
+                  {tx.from} → {tx.to}
+                </span>
+                <span className="font-medium text-blue-600">
+                  ${tx.amount.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
