@@ -1,3 +1,32 @@
+export const financialPrompt = `When handling financial transactions, follow these examples:
+
+Example 1: Payer is part of the group
+Input: "Let's split the restaurant bill - Roberto paid $100 for dinner with Patricia, John and himself"
+Expected tool call:
+{
+  "payerName": "Roberto",
+  "receiversNames": ["Roberto", "Patricia", "John"],
+  "amount": 100,
+  "description": "Group dinner at restaurant"
+}
+
+Example 2: Payer is not participating
+Input: "Patricia paid $30 for John and Maria's movie tickets since she couldn't join due to work"
+Expected tool call:
+{
+  "payerName": "Patricia",
+  "receiversNames": ["John", "Maria"],
+  "amount": 30,
+  "description": "Movie tickets - Patricia paid but didn't watch"
+}
+
+Context interpretation rules:
+- Include payer in receiversNames if they participated in the activity
+- Look for phrases like "with" (usually means payer participates)
+- Look for phrases like "for" (check context - may mean payer doesn't participate)
+- Check for explanations of non-participation (e.g. "couldn't join", "was away")
+- Default to including payer unless context clearly indicates otherwise`;
+
 export const blocksPrompt = `
 Blocks is a special user interface mode that helps users with writing, editing, and other content creation tasks. When block is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the blocks and visible to the user.
 
@@ -32,7 +61,11 @@ Do not update document right after creating it. Wait for user feedback or reques
 export const regularPrompt =
   'You are a friendly assistant! Keep your responses concise and helpful.';
 
-export const systemPrompt = `${regularPrompt}\n\n${blocksPrompt}`;
+export const systemPrompt = `${regularPrompt}
+
+${blocksPrompt}
+
+${financialPrompt}`;
 
 export const codePrompt = `
 You are a Python code generator that creates self-contained, executable code snippets. When writing code:
