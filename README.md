@@ -1,61 +1,83 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Next.js AI Chatbot</h1>
-</a>
+```markdown
+# 💸 LLM-Based Expense Splitter: Simplify Group Finances Effortlessly
 
-<p align="center">
-  An Open-Source AI Chatbot Template Built With Next.js and the AI SDK by Vercel.
-</p>
+Welcome to the **LLM-Based Expense Splitter**, your go-to tool for managing shared expenses. This AI-powered solution allows you to split costs fairly, without the hassle of manual calculations. Whether you're on a trip, hosting an event, or splitting household bills, this tool ensures everyone pays their fair share.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
-</p>
-<br/>
+---
 
-## Features
+## 🌟 Key Features
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports OpenAI (default), Anthropic, Cohere, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Vercel Postgres powered by Neon](https://vercel.com/storage/postgres) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [NextAuth.js](https://github.com/nextauthjs/next-auth)
-  - Simple and secure authentication
+- **Talk to Split:** Use natural language to record shared expenses and see who owes what.
+- **Instant Balances:** Calculate real-time balances with ease.
+- **Smart Suggestions:** AI helps improve fairness and offers split recommendations.
+- **Beautiful UI:** View your expenses and balances with a clean, intuitive interface.
 
-## Model Providers
+---
 
-This template ships with OpenAI `gpt-4o` as the default. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
+## 🚀 Real-Life Scenarios
 
-## Deploy Your Own
+1. **Trip Planning Made Easy**  
+    After a weekend getaway with friends, Alice pays for the hotel, while Bob covers dinner. Simply tell the app:  
+    *"Alice paid $300 for the hotel split between Alice, Bob, and Charlie."*  
+    *"Bob paid $90 for dinner split between Bob and Charlie."*  
+    The tool calculates how much each person owes, instantly.
 
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
+2. **Splitting Party Costs**  
+    Hosting a party? Add all shared expenses, like decorations and food. For example:  
+    *"Eve paid $50 for decorations, split between everyone."*  
+    See how much each guest should pitch in.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-chatbot&env=AUTH_SECRET,OPENAI_API_KEY&envDescription=Learn%20more%20about%20how%20to%20get%20the%20API%20Keys%20for%20the%20application&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-chatbot%2Fblob%2Fmain%2F.env.example&demo-title=AI%20Chatbot&demo-description=An%20Open-Source%20AI%20Chatbot%20Template%20Built%20With%20Next.js%20and%20the%20AI%20SDK%20by%20Vercel.&demo-url=https%3A%2F%2Fchat.vercel.ai&stores=[{%22type%22:%22postgres%22},{%22type%22:%22blob%22}])
+3. **Roommate Bill Sharing**  
+    Share monthly utilities by logging expenses like:  
+    *"David paid $120 for electricity split between David and Sarah."*  
+    Balance calculations ensure transparency and fairness.
 
-## Running locally
+---
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+## 🛠️ Getting Started
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
+1. **Add Expenses**  
+    Use simple phrases like:  
+    *"Alice paid $90 for dinner split three ways."*
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+2. **Check Balances**  
+    Ask:  
+    *"How much does everyone owe?"*  
+    Get an instant breakdown of who owes or is owed.
 
-```bash
-pnpm install
-pnpm dev
+3. **Visualize Results**  
+    View a summary of your transactions in a sleek, easy-to-read format:
+
+    ![Transaction Screenshot](https://via.placeholder.com/500x300)
+
+---
+
+## 💼 Use Cases
+
+- **Travel:** Simplify splitting hotel, transport, and meal costs among friends.
+- **Event Planning:** Share the cost of decorations, catering, and venue rental.
+- **Daily Living:** Manage shared household expenses like groceries and utilities.
+
+---
+
+## 🙌 How to Contribute
+
+We welcome ideas and improvements! To contribute:
+
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -m 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Open a pull request.
+
+---
+
+## 🤝 Acknowledgments
+
+Thanks to everyone who contributed to making this tool easy, transparent, and fun to use!
+
+---
+
+Ready to make shared expenses stress-free? **Let's split it fairly!** 💸
 ```
 
-Your app template should now be running on [localhost:3000](http://localhost:3000/).
