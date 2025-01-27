@@ -1,4 +1,3 @@
-```markdown
 # 💸 LLM-Based Expense Splitter: Simplify Group Finances Effortlessly
 
 Welcome to the **LLM-Based Expense Splitter**, your go-to tool for managing shared expenses. This AI-powered solution allows you to split costs fairly, without the hassle of manual calculations. Whether you're on a trip, hosting an event, or splitting household bills, this tool ensures everyone pays their fair share.
@@ -79,5 +78,3 @@ Thanks to everyone who contributed to making this tool easy, transparent, and fu
 ---
 
 Ready to make shared expenses stress-free? **Let's split it fairly!** 💸
-```
-
